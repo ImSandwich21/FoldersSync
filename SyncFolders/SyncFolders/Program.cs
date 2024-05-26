@@ -1,7 +1,3 @@
-﻿using System;
-using System.Runtime.CompilerServices;
-using System.Security.AccessControl;
-
 internal class Program
 {
     private static bool exitOnDemand = false;
