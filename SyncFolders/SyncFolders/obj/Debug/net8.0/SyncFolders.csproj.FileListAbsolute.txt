@@ -1,0 +1,15 @@
+C:\Users\Daniel\source\repos\FoldersSync\SyncFolders\SyncFolders\bin\Debug\net8.0\SyncFolders.exe
+C:\Users\Daniel\source\repos\FoldersSync\SyncFolders\SyncFolders\bin\Debug\net8.0\SyncFolders.deps.json
+C:\Users\Daniel\source\repos\FoldersSync\SyncFolders\SyncFolders\bin\Debug\net8.0\SyncFolders.runtimeconfig.json
+C:\Users\Daniel\source\repos\FoldersSync\SyncFolders\SyncFolders\bin\Debug\net8.0\SyncFolders.dll
+C:\Users\Daniel\source\repos\FoldersSync\SyncFolders\SyncFolders\bin\Debug\net8.0\SyncFolders.pdb
+C:\Users\Daniel\source\repos\FoldersSync\SyncFolders\SyncFolders\obj\Debug\net8.0\SyncFolders.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Daniel\source\repos\FoldersSync\SyncFolders\SyncFolders\obj\Debug\net8.0\SyncFolders.AssemblyInfoInputs.cache
+C:\Users\Daniel\source\repos\FoldersSync\SyncFolders\SyncFolders\obj\Debug\net8.0\SyncFolders.AssemblyInfo.cs
+C:\Users\Daniel\source\repos\FoldersSync\SyncFolders\SyncFolders\obj\Debug\net8.0\SyncFolders.csproj.CoreCompileInputs.cache
+C:\Users\Daniel\source\repos\FoldersSync\SyncFolders\SyncFolders\obj\Debug\net8.0\SyncFolders.sourcelink.json
+C:\Users\Daniel\source\repos\FoldersSync\SyncFolders\SyncFolders\obj\Debug\net8.0\SyncFolders.dll
+C:\Users\Daniel\source\repos\FoldersSync\SyncFolders\SyncFolders\obj\Debug\net8.0\refint\SyncFolders.dll
+C:\Users\Daniel\source\repos\FoldersSync\SyncFolders\SyncFolders\obj\Debug\net8.0\SyncFolders.pdb
+C:\Users\Daniel\source\repos\FoldersSync\SyncFolders\SyncFolders\obj\Debug\net8.0\SyncFolders.genruntimeconfig.cache
+C:\Users\Daniel\source\repos\FoldersSync\SyncFolders\SyncFolders\obj\Debug\net8.0\ref\SyncFolders.dll

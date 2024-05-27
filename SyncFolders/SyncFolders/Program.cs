@@ -1,4 +1,4 @@
-internal class Program
+﻿internal class Program
 {
     private static bool exitOnDemand = false;
 
@@ -104,12 +104,47 @@ internal class Program
     /// <param name="logFile">Log file to write the events</param>
     private static void Sync(string sourcePath, string replicaPath, string logFile)
     {
-        IEnumerable<string> sourceFiles = Directory.EnumerateFiles(sourcePath); // Get the source folder files
+        // Thread to check for new/modified files/folders
+        Thread tNew = new Thread(() => RecursiveNewModifiedSync(sourcePath, replicaPath, logFile));
+        tNew.Start();
 
-        foreach (string file in sourceFiles)
+        // Thread to check for deleted files/folders
+        Thread tDelete = new Thread(() => RecursiveDeletedSync(sourcePath, replicaPath, logFile));
+        tDelete.Start();
+    }
+
+    /// <summary>
+    /// Recursive method to check sub directories and respective files
+    /// </summary>
+    /// <param name="source">Source path to check</param>
+    /// <param name="replica">Replica path to add/copy</param>
+    /// <param name="logFile">Log file to write</param>
+    private static void RecursiveNewModifiedSync(string source, string replica, string logFile)
+    {
+        foreach (string subSourceDir in Directory.EnumerateDirectories(source)) // Check subsequent folders/directories
         {
-            string fileName = Path.GetFileName(file); // Get source file name
-            string replicaFile = Path.Combine(replicaPath, fileName); // Get replica path + file name
+            string relativePath = Path.GetRelativePath(source, subSourceDir);
+            string replicaSubDirectory = Path.Combine(replica, relativePath);
+
+            if (!Directory.Exists(replicaSubDirectory)) // Check if directory already exists
+            {
+                try
+                {
+                    Directory.CreateDirectory(replicaSubDirectory); // Create the new directory
+                    OperationLog(logFile, $"{DateTime.Now}: Create Folder: {relativePath}"); // Log method
+                    RecursiveNewModifiedSync(subSourceDir, replicaSubDirectory, logFile); // Check again for sub directories
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Error: {e.Message}"); // Show the message error
+                }
+            }
+        }
+
+        foreach (string sourceFile in Directory.EnumerateFiles(source)) // Check all files in current folder
+        {
+            string fileName = Path.GetFileName(sourceFile); // Get source file name
+            string replicaFile = Path.Combine(replica, fileName); // Get replica path + file name
 
             // Check if file already exists
             if (!File.Exists(replicaFile))
@@ -117,7 +152,7 @@ internal class Program
                 try
                 {
                     File.Create(replicaFile); // Create replica file in the replica folder
-                    OperationLog(logFile, $"Created: {fileName}"); // Log method
+                    OperationLog(logFile, $"{DateTime.Now}: Created: {fileName}"); // Log method
                 }
                 catch (Exception e)
                 {
@@ -128,17 +163,17 @@ internal class Program
             {
                 try
                 {
-                    if (IsFileBeingUsed(replicaFile) || IsFileBeingUsed(file))
+                    if (IsFileBeingUsed(replicaFile) || IsFileBeingUsed(sourceFile))
                         continue;
 
-                    FileInfo fileInfoSource = new FileInfo(file); // Get file info of the source file
+                    FileInfo fileInfoSource = new FileInfo(sourceFile); // Get file info of the source file
                     FileInfo fileInfoReplica = new FileInfo(replicaFile); // Get the file info of the replica file
 
                     // Check if the source file was modified
                     if (fileInfoSource.LastWriteTimeUtc > fileInfoReplica.LastWriteTimeUtc)
                     {
-                        File.Copy(file, replicaFile, true); // Copy the modified file, overwriting the existing one
-                        OperationLog(logFile, $"Copied: {fileName}"); // Log method
+                        File.Copy(sourceFile, replicaFile, true); // Copy the modified file, overwriting the existing one
+                        OperationLog(logFile, $"{DateTime.Now}: Copied: {fileName}"); // Log method
                     }
                 }
                 catch (Exception e)
@@ -147,19 +182,51 @@ internal class Program
                 }
             }
         }
+    }
 
-        foreach (string file in Directory.EnumerateFiles(replicaPath))
+    /// <summary>
+    /// Recursive method to check for deleted files/folders
+    /// </summary>
+    /// <param name="source">Source path to check</param>
+    /// <param name="replica">Replica path to delete</param>
+    /// <param name="logFile">Log file to write</param>
+    private static void RecursiveDeletedSync(string source, string replica, string logFile)
+    {
+        foreach (string subReplicaDir in Directory.EnumerateDirectories(replica)) // Check subsequent folders/directories
+        {
+            string relativePath = Path.GetRelativePath(replica, subReplicaDir);
+            string sourceSubDirectory = Path.Combine(source, relativePath);
+
+            if (!Directory.Exists(sourceSubDirectory)) // Check if directory still exits
+            {
+                try
+                {
+                    Directory.Delete(subReplicaDir, true); // If not delete from replica folder
+                    OperationLog(logFile, $"{DateTime.Now}: Delete Folder: {relativePath}"); // Log method
+                }
+                catch(Exception e)
+                {
+                    Console.WriteLine($"Error: {e.Message}"); // Show the message error
+                }
+            }
+            else
+            {
+                RecursiveDeletedSync(sourceSubDirectory, subReplicaDir, logFile); // Check again for sub directories
+            }
+        }
+
+        foreach (string file in Directory.EnumerateFiles(replica))
         {
             try
             {
                 string fileName = Path.GetFileName(file); // Get replica file name
-                string sourceFile = Path.Combine(sourcePath, fileName); // Get source path + file name
+                string sourceFile = Path.Combine(source, fileName); // Get source path + file name
 
                 // Check if the replica file exists in source path
                 if (!File.Exists(sourceFile))
                 {
                     File.Delete(file); // Delete the replica file
-                    OperationLog(logFile, $"Deleted: {fileName}"); // Log method
+                    OperationLog(logFile, $"{DateTime.Now}: Deleted: {fileName}"); // Log method
                 }
             }
             catch (Exception e)
@@ -181,7 +248,7 @@ internal class Program
     {
         try
         {
-            using FileStream s = File.Open(filePath, FileMode.Open, FileAccess.Read);
+            using FileStream s = File.Open(filePath, FileMode.Open, FileAccess.Read); // Throws exception if open, etc
         }
         catch (Exception)
         {
@@ -210,6 +277,6 @@ internal class Program
     private static void LogFileWrite(string logFile, string msg)
     {
         using StreamWriter sw = new(logFile, true);
-        sw.WriteLine($"{DateTime.Now}: {msg}");
+        sw.WriteLine(msg);
     }
 }
