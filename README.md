@@ -17,12 +17,16 @@ How it works:
 - Is it possible for the user to exit the program by pressing 'ESC'
 - Given the interval, the program will check for modifications in the file collection on the source folder, granting the synchronization between the two folders
 - Events on the replica folder are displayed in as console output and registered in the log file
-- New files in the source folder are added as 'Created' to the replica folder, and logged as 'Created'
+- New folders in the source folder are added to the replica folder, and logged as 'Create folder'
+- New files in the source folder are added to the replica folder, and logged as 'Created'
 - Modified files in the source folder are copied to the replica folder, and logged as 'Copied'
+- Deleted folder in the source folder are deleted from the replica folder, and logged as 'Delete folder'
 - Deleted files in the source folder are deleted from the replica folder, and logged as 'Deleted'
 
 Made by:
 Daniel Silva 26-05-2024
+
+Updaded: 27-05-2024
 
 Program made using:
 Microsoft Visual Studio Community 2022 (64 bits) - Current
